@@ -1,13 +1,17 @@
 {
-  "name": "pipinstallpip/onencews",
+  "name": "bmooij/onence",
   "type": "library",
-  "description": "Http client for official 1nce rest api https://api.1nce.com",
+  "description": "(Unofficial) Http client for official 1nce rest api https://api.1nce.com",
   "keywords": ["1nce","once","onence","client","http"],
   "license": "MIT",
-  "homepage": "https://github.com/pipinstallpip/1nce",
+  "homepage": "https://github.com/bmooij/1nce",
   "authors": [
     {
       "name": "pipinstallpip",
+      "role": "Developer"
+    },
+    {
+      "name": "bmooij",
       "role": "Developer"
     }
   ],

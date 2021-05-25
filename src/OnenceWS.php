@@ -22,10 +22,6 @@ class OnenceWS extends Client
     private $clientId;
     private $clientSecret;
     private $encodedAuthorization ;
-    private $authToken;
-    private $tokenType;
-    private $expiresIn;
-    private $header;
     private $apiVersion;
 
 
@@ -52,23 +48,21 @@ class OnenceWS extends Client
     }
 
     /**
-     * @return void setta auth token.
+     * @return object with:
+     *      authToken => Access token for using the 1NCE API.
+     *      tokenType => Type of token
+     *      expiresIn => Time in seconds until the API Bearer Token is expired and a new token has to be queried.
+     *      tokenScope => Access level of the returned token.
      * @throws ErrorException
      */
-    private function __setAuthToken(){
+    protected function __getAuthToken() {
         $responseContent = json_decode($this->send($this->__getTokenRequest())->getBody()->getContents());
         if((isset($responseContent->access_token))){
-            $this->authToken = $responseContent->access_token;
-            $this->tokenType = $responseContent->token_type;
-            $this->expiresIn = $responseContent->expires_in;
-            $this->header = [
-                'Content-Type' => "application/json",
-                'Authorization' => "$this->tokenType $this->authToken",
-                'Accept' => '*/*',
-                'Cache-Control' => 'no-cache',
-                'Host' => 'api.1nce.com',
-                'Accept-Encoding' => 'gzip, deflate',
-                'Connection' => 'keep-alive',
+            return (object) [
+                'authToken' => $responseContent->access_token,
+                'tokenType' => $responseContent->token_type,
+                'expiresIn' => $responseContent->expires_in,
+                'tokenScope' => $responseContent->scope,
             ];
         }else{
             throw new ErrorException('Errore durante il decoding del access token');
@@ -83,8 +77,20 @@ class OnenceWS extends Client
      * @param  array $params
      */
     private function __prepare($url,$type,$params = []){
-        $this->__setAuthToken();
-        return new Request($type,"{$this::$baseUrl}/$this->apiVersion/$url?access_token=$this->authToken", $this->header, json_encode($params));
+        $auth = $this->__getAuthToken();
+        return new Request($type,
+            "{$this::$baseUrl}/$this->apiVersion/$url",
+            [
+                'Content-Type' => "application/json",
+                'Authorization' => "$auth->tokenType $auth->authToken",
+                'Accept' => '*/*',
+                'Cache-Control' => 'no-cache',
+                'Host' => 'api.1nce.com',
+                'Accept-Encoding' => 'gzip, deflate',
+                'Connection' => 'keep-alive',
+            ],
+            json_encode($params)
+        );
     }
 
 
