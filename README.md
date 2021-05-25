@@ -6,7 +6,7 @@ OnenceWS Http client for official 1nce rest api https://api.1nce.com
 
 
 ```bash
-composer require pipinstallpip/onencews:dev-master
+composer require bmooij/onencews:dev-master
 ```
 
 ## Usage
